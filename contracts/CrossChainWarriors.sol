@@ -2,7 +2,7 @@
 pragma solidity 0.8.7;
 
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@zetachain/protocol-contracts/contracts/evm/interfaces/ZetaInterfaces.sol";
@@ -17,13 +17,17 @@ interface CrossChainWarriorsErrors {
 }
 
 contract CrossChainWarriors is
-    ERC721("CrossChainWarriors", "CCWAR"),
+    ERC721Enumerable,
     ZetaInteractor,
     ZetaReceiver,
     CrossChainWarriorsErrors
 {
     using Counters for Counters.Counter;
     using Strings for uint256;
+
+    mapping(uint256 => string) private _tokenURIs;
+    mapping(address => uint256) private _balances;
+
 
     bytes32 public constant CROSS_CHAIN_TRANSFER_MESSAGE =
         keccak256("CROSS_CHAIN_TRANSFER");
@@ -41,7 +45,7 @@ contract CrossChainWarriors is
         address zetaTokenAddress,
         address zetaConsumerAddress,
         bool useEven
-    ) ZetaInteractor(connectorAddress) {
+    ) ZetaInteractor(connectorAddress) ERC721("CrossChainWarriors", "CCWAR") {
         _zetaToken = IERC20(zetaTokenAddress);
         _zetaConsumer = ZetaTokenConsumer(zetaConsumerAddress);
 
@@ -57,19 +61,23 @@ contract CrossChainWarriors is
         baseURI = baseURIParam;
     }
 
-    function mint(address to) public returns (uint256) {
-        uint256 newWarriorId = tokenIds.current();
+function mint(address to, string memory tokenURI) public returns (uint256) {
+    uint256 newWarriorId = tokenIds.current();
 
-        /**
-         * @dev Always increment by two to keep ids even/odd (depending on the chain)
-         * Check the constructor for further reference
-         */
-        tokenIds.increment();
-        tokenIds.increment();
+    /**
+     * @dev Always increment by two to keep ids even/odd (depending on the chain)
+     * Check the constructor for further reference
+     */
+    tokenIds.increment();
+    tokenIds.increment();
 
-        _safeMint(to, newWarriorId);
-        return newWarriorId;
-    }
+    _safeMint(to, newWarriorId);
+    _setTokenURI(newWarriorId, tokenURI);
+
+    return newWarriorId;
+}
+
+
 
     /**
      * @dev Useful for cross-chain minting
@@ -154,5 +162,34 @@ contract CrossChainWarriors is
             revert InvalidMessageType();
 
         _mintId(from, tokenId);
+    }
+
+    struct TokenInfo {
+        uint256 tokenId;
+        string tokenURI;
+    }
+
+    function getTokensByWallet(address wallet) public view returns (TokenInfo[] memory) {
+        uint256 tokenCount = balanceOf(wallet);
+        TokenInfo[] memory tokens = new TokenInfo[](tokenCount);
+
+        for (uint256 i = 0; i < tokenCount; i++) {
+            uint256 tokenId = tokenOfOwnerByIndex(wallet, i);
+            string memory tokenURI = tokenURI(tokenId);
+
+            tokens[i] = TokenInfo(tokenId, tokenURI);
+        }
+
+        return tokens;
+    }
+
+
+    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
+        _tokenURIs[tokenId] = _tokenURI;
+    }
+
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        return _tokenURIs[tokenId];
     }
 }

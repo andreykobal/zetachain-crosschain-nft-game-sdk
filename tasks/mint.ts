@@ -1,3 +1,5 @@
+// mint.ts
+
 import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
@@ -10,7 +12,9 @@ const main = async (args: any, hre: HardhatRuntimeEnvironment) => {
   const factory = await hre.ethers.getContractFactory(contractName);
   const contract = factory.attach(args.contract);
 
-  const tx = await contract.connect(signer).mint(signer.address);
+  const tokenURI = "https://bafkreifaahw4y4z3nknrhtmbsmyrk4kyqo7lnzw5mrcnu57ibpkfuwwrzy.ipfs.nftstorage.link/"; // Provide the token URI here
+
+  const tx = await contract.connect(signer).mint(signer.address, tokenURI); // Pass the tokenURI parameter
 
   const receipt = await tx.wait();
   const event = receipt.events?.find((event) => event.event === "Transfer");
