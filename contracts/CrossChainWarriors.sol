@@ -174,14 +174,15 @@ function mint(address to, string memory tokenURI) public returns (uint256) {
         TokenInfo[] memory tokens = new TokenInfo[](tokenCount);
 
         for (uint256 i = 0; i < tokenCount; i++) {
-            uint256 tokenId = tokenOfOwnerByIndex(wallet, i);
-            string memory tokenURI = tokenURI(tokenId);
+            uint256 tokenId = tokenByIndex(wallet, i);
+            string memory tokenURI = _tokenURIs[tokenId];
 
             tokens[i] = TokenInfo(tokenId, tokenURI);
         }
 
         return tokens;
     }
+
 
 
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
