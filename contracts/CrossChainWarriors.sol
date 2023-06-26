@@ -82,10 +82,10 @@ function mint(address to, string memory tokenURI) public returns (uint256) {
     /**
      * @dev Useful for cross-chain minting
      */
-    function _mintId(address to, uint256 tokenId) internal {
+    function _mintId(address to, uint256 tokenId, string memory tokenURI) internal {
         _safeMint(to, tokenId);
+        _setTokenURI(tokenId, tokenURI);
     }
-
     function _burnWarrior(uint256 burnedWarriorId) internal {
         _burn(burnedWarriorId);
     }
@@ -147,7 +147,8 @@ function mint(address to, string memory tokenURI) public returns (uint256) {
         if (messageType != CROSS_CHAIN_TRANSFER_MESSAGE)
             revert InvalidMessageType();
 
-        _mintId(to, tokenId);
+        _mintId(to, tokenId, _tokenURIs[tokenId]);
+
     }
 
     function onZetaRevert(
@@ -161,7 +162,8 @@ function mint(address to, string memory tokenURI) public returns (uint256) {
         if (messageType != CROSS_CHAIN_TRANSFER_MESSAGE)
             revert InvalidMessageType();
 
-        _mintId(from, tokenId);
+        _mintId(from, tokenId, _tokenURIs[tokenId]);
+
     }
 
     struct TokenInfo {
