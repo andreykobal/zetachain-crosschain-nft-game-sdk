@@ -22,8 +22,13 @@ const PRIVATE_KEYS =
     networks: {
       ...getHardhatConfigNetworks(PRIVATE_KEYS),
       "bsc-testnet": {
-        ...getHardhatConfigNetworks(PRIVATE_KEYS)["athens"], // Copy existing settings
-        gas: 10000000, // Set the desired gas limit
+        ...getHardhatConfigNetworks(PRIVATE_KEYS)["bsc-testnet"], // Copy existing settings
+        gas: 20000000, // Set the desired gas limit
+      },
+      goerli: {
+        ...getHardhatConfigNetworks(PRIVATE_KEYS)["goerli"], // Copy existing settings
+        gas: 20000000, // Set the desired gas limit //20000000000000000 //20000000
+        url: `https://eth-goerli.g.alchemy.com/v2/5kJ19pS_d17Gf4Cj8Y7Rcu69MSZRZlYF`,
       },
     },
   };
