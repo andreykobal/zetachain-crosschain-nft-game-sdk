@@ -10,7 +10,6 @@ interface TokenInfo {
   tokenId: number;
   tokenURI: string;
 }
-
 const main = async (args: any, hre: HardhatRuntimeEnvironment) => {
     const [signer] = await hre.ethers.getSigners();
     console.log(`🔑 Using account: ${signer.address}\n`);
@@ -20,14 +19,17 @@ const main = async (args: any, hre: HardhatRuntimeEnvironment) => {
   
     const walletAddress = args.wallet; // Specify the wallet address as a command line argument
   
-    const tokens: TokenInfo[] = await contract.getTokensByWallet(walletAddress);
-  
-    console.log(`Tokens owned by ${walletAddress}:`);
-  
-    for (const token of tokens) {
-      console.log("Raw Token Data:", token);
+    const tokens: any[] = await contract.getTokensByWallet(walletAddress);
+
+    console.log(`Tokens owned by ${walletAddress}:\n`);
+
+    // assuming tokens[0] are IDs and tokens[1] are URIs
+    for (let i = 0; i < tokens[0].length; i++) {
+        console.log(`Token ID: ${tokens[0][i].toString()}, Token URI: ${tokens[1][i]}`);
     }
-  };
+};
+
+
   
 
 
