@@ -1,33 +1,55 @@
+using Web3Unity.Scripts.Library.Ethers.Providers;
 using Web3Unity.Scripts.Library.Ethers.Contracts;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Web3Unity.Scripts.Library.Ethers.Providers;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
+using System.Threading.Tasks; // Add this line
+
 
 public class Web3WalletContractRead : MonoBehaviour
 {
     public void Start()
     {
-        CheckVariable();
+        CheckCrosschainMetadata();
     }
 
-    async public void CheckVariable()
+    async public void CheckCrosschainMetadata()
+    {
+        // Chain: goerli
+        string contractAddressGoerli = "0x9ECB90F11D7c609A9dD093f30a9201943D8036DB";
+        var providerGoerli = new JsonRpcProvider("https://eth-goerli.g.alchemy.com/v2/5kJ19pS_d17Gf4Cj8Y7Rcu69MSZRZlYF");
+        await CheckChainMetadata("goerli", contractAddressGoerli, providerGoerli);
+
+        // Chain: polygon-mumbai
+        string contractAddressPolygonMumbai = "0x0AFb1dD2c64Da103d1a66cac386C4F1dBAa4584a";
+        var providerPolygonMumbai = new JsonRpcProvider("https://rpc.ankr.com/polygon_mumbai");
+        await CheckChainMetadata("polygon-mumbai", contractAddressPolygonMumbai, providerPolygonMumbai);
+
+        // Chain: bsc-testnet
+        string contractAddressBSCTestnet = "0x9201a1Ebde6Aaf1efbC93BCc915a4a5616419E5c";
+        var providerBSCTestnet = new JsonRpcProvider("https://data-seed-prebsc-1-s1.binance.org:8545");
+        await CheckChainMetadata("bsc-testnet", contractAddressBSCTestnet, providerBSCTestnet);
+    }
+
+    async private Task CheckChainMetadata(string chainName, string contractAddress, JsonRpcProvider provider)
     {
         string contractAbi = ContractAbi.abi;
-        string contractAddress = "0x9ECB90F11D7c609A9dD093f30a9201943D8036DB";
         string method = "getTokensByWallet";
+
+        // Hardcoded wallet address
         string walletAddress = "0x3D840832895f0d7bE004D1D8BB727082FC73793a"; // Replace with the actual wallet address
 
-        var provider = new JsonRpcProvider("https://eth-goerli.g.alchemy.com/v2/5kJ19pS_d17Gf4Cj8Y7Rcu69MSZRZlYF");
         var contract = new Contract(contractAbi, contractAddress, provider);
-        Debug.Log("Contract: " + contract);
+        Debug.Log("Contract on " + chainName + ": " + contract);
         var calldata = await contract.Call(method, new object[]
         {
             walletAddress
         });
 
         string responseJson = JsonConvert.SerializeObject(calldata);
-        Debug.Log("Contract Call Response: " + responseJson);
+        Debug.Log("Contract Call Response on " + chainName + ": " + responseJson);
 
         try
         {
@@ -37,15 +59,34 @@ public class Web3WalletContractRead : MonoBehaviour
 
             for (int i = 0; i < tokenIds.Length; i++)
             {
-                Debug.Log("Token ID: " + tokenIds[i] + ", Token URI: " + tokenURIs[i]);
+                string tokenId = tokenIds[i];
+                string tokenURI = tokenURIs[i];
+                StartCoroutine(GetTokenJson(chainName, tokenId, tokenURI));
             }
         }
         catch (JsonReaderException e)
         {
-            Debug.LogError("JSON Parsing Error: " + e.Message);
+            Debug.LogError("JSON Parsing Error on " + chainName + ": " + e.Message);
+        }
+    }
+
+    IEnumerator GetTokenJson(string chainName, string tokenId, string tokenURI)
+    {
+        UnityWebRequest www = UnityWebRequest.Get(tokenURI);
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            string tokenJson = www.downloadHandler.text;
+            Debug.Log("Chain: " + chainName + ", Token ID: " + tokenId + ", Token JSON Response: " + tokenJson);
+        }
+        else
+        {
+            Debug.LogError("Chain: " + chainName + ", Token ID: " + tokenId + ", Token JSON Request Error: " + www.error);
         }
     }
 }
+
 
 
 public class ContractAbi {
