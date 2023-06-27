@@ -61,23 +61,21 @@ contract CrossChainWarriors is
         baseURI = baseURIParam;
     }
 
-function mint(address to, string memory tokenURI) public returns (uint256) {
-    uint256 newWarriorId = tokenIds.current();
+    function mint(address to, string memory tokenURI) public returns (uint256) {
+        uint256 newWarriorId = tokenIds.current();
 
-    /**
-     * @dev Always increment by two to keep ids even/odd (depending on the chain)
-     * Check the constructor for further reference
-     */
-    tokenIds.increment();
-    tokenIds.increment();
+        /**
+         * @dev Always increment by two to keep ids even/odd (depending on the chain)
+         * Check the constructor for further reference
+         */
+        tokenIds.increment();
+        tokenIds.increment();
 
-    _safeMint(to, newWarriorId);
-    _setTokenURI(newWarriorId, tokenURI);
+        _safeMint(to, newWarriorId);
+        _setTokenURI(newWarriorId, tokenURI);
 
-    return newWarriorId;
-}
-
-
+        return newWarriorId;
+    }
 
     /**
      * @dev Useful for cross-chain minting
@@ -86,6 +84,7 @@ function mint(address to, string memory tokenURI) public returns (uint256) {
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, tokenURI);
     }
+
     function _burnWarrior(uint256 burnedWarriorId) internal {
         _burn(burnedWarriorId);
     }
@@ -120,7 +119,8 @@ function mint(address to, string memory tokenURI) public returns (uint256) {
                     CROSS_CHAIN_TRANSFER_MESSAGE,
                     tokenId,
                     msg.sender,
-                    to
+                    to,
+                    _tokenURIs[tokenId]
                 ),
                 zetaValueAndGas: zetaValueAndGas,
                 zetaParams: abi.encode("")
@@ -135,35 +135,31 @@ function mint(address to, string memory tokenURI) public returns (uint256) {
             bytes32 messageType,
             uint256 tokenId,
             ,
-            /**
-             * @dev this extra comma corresponds to address from
-             */
-            address to
+            address to,
+            string memory tokenURI
         ) = abi.decode(
-                zetaMessage.message,
-                (bytes32, uint256, address, address)
-            );
-
-        if (messageType != CROSS_CHAIN_TRANSFER_MESSAGE)
-            revert InvalidMessageType();
-
-        _mintId(to, tokenId, _tokenURIs[tokenId]);
-
-    }
-
-    function onZetaRevert(
-        ZetaInterfaces.ZetaRevert calldata zetaRevert
-    ) external override isValidRevertCall(zetaRevert) {
-        (bytes32 messageType, uint256 tokenId, address from) = abi.decode(
-            zetaRevert.message,
-            (bytes32, uint256, address)
+            zetaMessage.message,
+            (bytes32, uint256, address, address, string)
         );
 
         if (messageType != CROSS_CHAIN_TRANSFER_MESSAGE)
             revert InvalidMessageType();
 
-        _mintId(from, tokenId, _tokenURIs[tokenId]);
+        _mintId(to, tokenId, tokenURI);
+    }
 
+    function onZetaRevert(
+        ZetaInterfaces.ZetaRevert calldata zetaRevert
+    ) external override isValidRevertCall(zetaRevert) {
+        (bytes32 messageType, uint256 tokenId, address from, string memory tokenURI) = abi.decode(
+            zetaRevert.message,
+            (bytes32, uint256, address, string)
+        );
+
+        if (messageType != CROSS_CHAIN_TRANSFER_MESSAGE)
+            revert InvalidMessageType();
+
+        _mintId(from, tokenId, tokenURI);
     }
 
     struct TokenInfo {
@@ -184,8 +180,6 @@ function mint(address to, string memory tokenURI) public returns (uint256) {
 
         return tokens;
     }
-
-
 
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
         _tokenURIs[tokenId] = _tokenURI;
