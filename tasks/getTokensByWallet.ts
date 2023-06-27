@@ -18,12 +18,12 @@ const main = async (args: any, hre: HardhatRuntimeEnvironment) => {
 
   const walletAddress = args.wallet; // Specify the wallet address as a command line argument
 
-  const tokens: TokenInfo[] = await contract.getTokensByWallet(walletAddress);
+  const [tokenIds, tokenURIs]: [string[], string[]] = await contract.getTokensByWallet(walletAddress);
 
   console.log(`Tokens owned by ${walletAddress}:\n`);
 
-  for (const token of tokens) {
-    console.log(`Token ID: ${token.tokenId.toString()}, Token URI: ${token.tokenURI}`);
+  for (let i = 0; i < tokenIds.length; i++) {
+    console.log(`Token ID: ${tokenIds[i]}, Token URI: ${tokenURIs[i]}`);
   }
 };
 

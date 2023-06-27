@@ -21,10 +21,10 @@ const PRIVATE_KEYS =
     solidity: "0.8.7",
     networks: {
       ...getHardhatConfigNetworks(PRIVATE_KEYS),
-      "bsc-testnet": {
-        ...getHardhatConfigNetworks(PRIVATE_KEYS)["bsc-testnet"], // Copy existing settings
-        gas: 20000000, // Set the desired gas limit
-      },
+      // "bsc-testnet": {
+      //   ...getHardhatConfigNetworks(PRIVATE_KEYS)["bsc-testnet"], // Copy existing settings
+      //   gas: 20000000, // Set the desired gas limit
+      // },
       // goerli: {
       //   ...getHardhatConfigNetworks(PRIVATE_KEYS)["goerli"], // Copy existing settings
       //   gas: 20000000, // Set the desired gas limit //20000000000000000 //20000000

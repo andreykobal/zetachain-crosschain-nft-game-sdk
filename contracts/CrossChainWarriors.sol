@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@zetachain/protocol-contracts/contracts/evm/interfaces/ZetaInterfaces.sol";
 import "@zetachain/protocol-contracts/contracts/evm/tools/ZetaInteractor.sol";
+import "@openzeppelin/contracts/utils/Strings.sol"; // Import the Strings library
 
 interface CrossChainWarriorsErrors {
     error InvalidMessageType();
@@ -23,7 +24,7 @@ contract CrossChainWarriors is
     CrossChainWarriorsErrors
 {
     using Counters for Counters.Counter;
-    using Strings for uint256;
+    using Strings for uint256; // Use the Strings library for uint256 to string conversion
 
     mapping(uint256 => string) private _tokenURIs;
     mapping(address => uint256) private _balances;
@@ -162,23 +163,21 @@ contract CrossChainWarriors is
         _mintId(from, tokenId, tokenURI);
     }
 
-    struct TokenInfo {
-        uint256 tokenId;
-        string tokenURI;
-    }
-
-    function getTokensByWallet(address wallet) public view returns (TokenInfo[] memory) {
+    function getTokensByWallet(address wallet) public view returns (string[] memory, string[] memory) {
         uint256 tokenCount = balanceOf(wallet);
-        TokenInfo[] memory tokens = new TokenInfo[](tokenCount);
+        string[] memory tokenIds = new string[](tokenCount);
+        string[] memory tokenURIs = new string[](tokenCount);
 
         for (uint256 i = 0; i < tokenCount; i++) {
             uint256 tokenId = tokenOfOwnerByIndex(wallet, i);
+            string memory tokenIdStr = tokenId.toString(); // Convert tokenId to string
             string memory tokenURI = _tokenURIs[tokenId];
 
-            tokens[i] = TokenInfo(tokenId, tokenURI);
+            tokenIds[i] = tokenIdStr;
+            tokenURIs[i] = tokenURI;
         }
 
-        return tokens;
+        return (tokenIds, tokenURIs);
     }
 
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
