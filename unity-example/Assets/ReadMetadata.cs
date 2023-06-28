@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 using System.Threading.Tasks; // Add this line
 
 
-public class Web3WalletContractRead : MonoBehaviour
+public class ReadMetadata : MonoBehaviour
 {
     public void Start()
     {
