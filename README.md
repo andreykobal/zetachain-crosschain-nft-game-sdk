@@ -64,7 +64,7 @@ Queries all token IDs and corresponding token URIs owned by a wallet address. Pr
 
 ## Smart Contract
 
-The SDK includes a smart contract called `CrossChainWarriors.sol`. This contract implements the ERC721Enumerable interface and provides additional functionality for cross-chain transfers of NFT tokens. Here are some key methods of the contract:
+The SDK includes a smart contract called `Omniverse.sol`. This contract implements the ERC721Enumerable interface and provides additional functionality for cross-chain transfers of NFT tokens. Here are some key methods of the contract:
 
 ### Constructor
 
