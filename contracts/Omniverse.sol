@@ -9,7 +9,7 @@ import "@zetachain/protocol-contracts/contracts/evm/interfaces/ZetaInterfaces.so
 import "@zetachain/protocol-contracts/contracts/evm/tools/ZetaInteractor.sol";
 import "@openzeppelin/contracts/utils/Strings.sol"; // Import the Strings library
 
-interface CrossChainWarriorsErrors {
+interface OmniverseErrors {
     error InvalidMessageType();
 
     error InvalidTransferCaller();
@@ -17,11 +17,11 @@ interface CrossChainWarriorsErrors {
     error ErrorApprovingZeta();
 }
 
-contract CrossChainWarriors is
+contract Omniverse is
     ERC721Enumerable,
     ZetaInteractor,
     ZetaReceiver,
-    CrossChainWarriorsErrors
+    OmniverseErrors
 {
     using Counters for Counters.Counter;
     using Strings for uint256; // Use the Strings library for uint256 to string conversion
@@ -46,7 +46,7 @@ contract CrossChainWarriors is
         address zetaTokenAddress,
         address zetaConsumerAddress,
         bool useEven
-    ) ZetaInteractor(connectorAddress) ERC721("CrossChainWarriors", "CCWAR") {
+    ) ZetaInteractor(connectorAddress) ERC721("Omniverse", "CCWAR") {
         _zetaToken = IERC20(zetaTokenAddress);
         _zetaConsumer = ZetaTokenConsumer(zetaConsumerAddress);
 
