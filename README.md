@@ -41,7 +41,7 @@ npx hardhat deploy --networks goerli,polygon-mumbai,bsc-testnet
 ### Mint
 
 ```shell
-npx hardhat mint --contract <contract> --network <network> --tokenURI <tokenURI>
+npx hardhat mint --contract <contract> --network <network> 
 ```
 
 Mints a new NFT token and assigns it to the specified address. Provide the contract address (`<contract>`), the network name (`<network>`), and the token URI (`<tokenURI>`) as command-line arguments.
