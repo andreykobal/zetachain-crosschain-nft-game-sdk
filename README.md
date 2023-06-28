@@ -2,7 +2,7 @@
 
 ## SDK for Cross-Chain NFT Game Development with ZetaChain
 
-![zetachain-cover](https://github.com/andreykobal/omniverse-crosschain-nft-game-sdk/assets/19206978/6ed26ace-0d31-42ce-ad32-d4f9b85e92b2)
+![logo-omniverse-sdk](https://github.com/andreykobal/zetachain-crosschain-nft-game-sdk/assets/19206978/d82bee37-7e40-4ab1-b876-3936409fe928)
 
 
 This SDK provides a set of tools and smart contracts for cross-chain NFT game development. It includes functionality for minting, transferring, and querying NFT tokens across different chains. The SDK is built on top of the ZetaChain blockchain and uses the Hardhat framework for testing and deployment.
