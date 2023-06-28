@@ -1,4 +1,4 @@
-# ZetaChain Omniverse
+# Omniverse: ZetaChain Crosschain NFT game SDK 
 
 ## SDK for Cross-Chain NFT Game Development with ZetaChain
 
